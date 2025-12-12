@@ -46,8 +46,11 @@ def print_welcome_message():
     print("  │                                           │")
     print("  │   Hello! Welcome to XO Game!              │")
     print("  │                                           │")
-    print("  │   Battle against an unbeatable AI        │")
-    print("  │   powered by the Minimax algorithm!      │")
+    print("  │   ⚠️  WARNING: UNBEATABLE AI! ⚠️           │")
+    print("  │                                           │")
+    print("  │   The AI uses Minimax algorithm with      │")
+    print("  │   Alpha-Beta pruning. It CANNOT lose!     │")
+    print("  │   Best you can do is a DRAW!              │")
     print("  │                                           │")
     print("  └───────────────────────────────────────────┘")
     print("\n")
@@ -128,9 +131,10 @@ def get_game_result(board, player_symbol, ai_symbol):
         return 'draw'
     return None
 
-# ============== MINIMAX AI ALGORITHM ==============
+# ============== MINIMAX AI ALGORITHM WITH ALPHA-BETA PRUNING ==============
 # The Minimax algorithm explores all possible game states
 # and chooses the optimal move assuming perfect play.
+# Alpha-Beta pruning optimizes by cutting off branches that won't affect the result.
 #
 # How it works:
 # 1. AI is the "maximizer" - wants highest score
@@ -138,10 +142,14 @@ def get_game_result(board, player_symbol, ai_symbol):
 # 3. Scores: AI win = +10, Player win = -10, Draw = 0
 # 4. Recursively evaluate all possible moves
 # 5. Choose the move with the best score for AI
+# 6. Alpha = best score maximizer can guarantee
+# 7. Beta = best score minimizer can guarantee
+#
+# RESULT: AI CANNOT LOSE - It will always WIN or DRAW!
 
-def minimax(board, depth, is_maximizing, ai_symbol, player_symbol):
+def minimax(board, depth, is_maximizing, ai_symbol, player_symbol, alpha=float('-inf'), beta=float('inf')):
     """
-    Minimax algorithm implementation.
+    Minimax algorithm with Alpha-Beta Pruning - UNBEATABLE AI.
     
     Args:
         board: Current game board
@@ -149,6 +157,8 @@ def minimax(board, depth, is_maximizing, ai_symbol, player_symbol):
         is_maximizing: True if it's AI's turn (maximizing)
         ai_symbol: The AI's symbol (X or O)
         player_symbol: The player's symbol
+        alpha: Best score the maximizer can guarantee (for pruning)
+        beta: Best score the minimizer can guarantee (for pruning)
     
     Returns:
         The best score for the current board state
@@ -170,11 +180,16 @@ def minimax(board, depth, is_maximizing, ai_symbol, player_symbol):
             # Try this move
             board[move] = ai_symbol
             # Recursively evaluate
-            score = minimax(board, depth + 1, False, ai_symbol, player_symbol)
+            score = minimax(board, depth + 1, False, ai_symbol, player_symbol, alpha, beta)
             # Undo the move
             board[move] = ' '
             # Keep the best score
             best_score = max(score, best_score)
+            # Update alpha
+            alpha = max(alpha, best_score)
+            # Alpha-Beta pruning
+            if beta <= alpha:
+                break  # Beta cut-off
         return best_score
     else:
         # Player's turn - minimize the score
@@ -183,30 +198,43 @@ def minimax(board, depth, is_maximizing, ai_symbol, player_symbol):
             # Try this move
             board[move] = player_symbol
             # Recursively evaluate
-            score = minimax(board, depth + 1, True, ai_symbol, player_symbol)
+            score = minimax(board, depth + 1, True, ai_symbol, player_symbol, alpha, beta)
             # Undo the move
             board[move] = ' '
             # Keep the best score (lowest for minimizer)
             best_score = min(score, best_score)
+            # Update beta
+            beta = min(beta, best_score)
+            # Alpha-Beta pruning
+            if beta <= alpha:
+                break  # Alpha cut-off
         return best_score
 
 def get_ai_move(board, ai_symbol, player_symbol):
     """
-    Get the best move for the AI using Minimax.
+    Get the best move for the AI using Minimax with Alpha-Beta Pruning.
+    
+    The AI will NEVER lose - it always plays optimally!
     
     Returns:
         The best position (1-9) for the AI to play
     """
     best_score = float('-inf')
     best_move = None
+    alpha = float('-inf')
+    beta = float('inf')
     
     available_moves = get_available_moves(board)
     
-    for move in available_moves:
+    # Strategic move ordering: center > corners > edges (for better pruning)
+    move_priority = [4, 0, 2, 6, 8, 1, 3, 5, 7]
+    ordered_moves = [m for m in move_priority if m in available_moves]
+    
+    for move in ordered_moves:
         # Try this move
         board[move] = ai_symbol
-        # Evaluate using minimax
-        score = minimax(board, 0, False, ai_symbol, player_symbol)
+        # Evaluate using minimax with alpha-beta pruning
+        score = minimax(board, 0, False, ai_symbol, player_symbol, alpha, beta)
         # Undo the move
         board[move] = ' '
         
@@ -214,6 +242,9 @@ def get_ai_move(board, ai_symbol, player_symbol):
         if score > best_score:
             best_score = score
             best_move = move
+        
+        # Update alpha for pruning
+        alpha = max(alpha, best_score)
     
     # Return position (1-9 format)
     return best_move + 1
@@ -222,23 +253,26 @@ def print_result(result):
     """Print the game result with a nice UI."""
     print()
     if result == 'player_wins':
+        # This should NEVER happen with the unbeatable AI!
         print("  ╔═══════════════════════════════════════════╗")
         print("  ║                                           ║")
-        print("  ║      CONGRATULATIONS! YOU WIN!            ║")
+        print("  ║    🏆 IMPOSSIBLE! YOU BEAT THE AI! 🏆     ║")
+        print("  ║       You found a bug! Report it!         ║")
         print("  ║                                           ║")
         print("  ╚═══════════════════════════════════════════╝")
     elif result == 'ai_wins':
         print("  ╔═══════════════════════════════════════════╗")
         print("  ║                                           ║")
-        print("  ║          GAME OVER - AI WINS!             ║")
-        print("  ║        Better luck next time!             ║")
+        print("  ║         🤖 AI WINS! 🤖                    ║")
+        print("  ║    The AI is unbeatable! Try again!       ║")
         print("  ║                                           ║")
         print("  ╚═══════════════════════════════════════════╝")
     elif result == 'draw':
         print("  ╔═══════════════════════════════════════════╗")
         print("  ║                                           ║")
-        print("  ║           IT'S A DRAW!                    ║")
-        print("  ║       Great game! Well played!            ║")
+        print("  ║         🤝 IT'S A DRAW! 🤝                ║")
+        print("  ║    Excellent! That's the best you can do! ║")
+        print("  ║         against this AI!                  ║")
         print("  ║                                           ║")
         print("  ╚═══════════════════════════════════════════╝")
     print()
