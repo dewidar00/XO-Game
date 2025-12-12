@@ -35,28 +35,14 @@ def print_header():
     print("  ║        ██╔╝ ██╗╚██████╔╝                  ║")
     print("  ║        ╚═╝  ╚═╝ ╚═════╝                   ║")
     print("  ║                                           ║")
-    print("  ║           TIC  TAC  TOE                   ║")
+    print("  ║                                           ║")
     print("  ║                                           ║")
     print("  ╚═══════════════════════════════════════════╝")
     print("\n")
 
-def print_welcome_message():
-    """Print welcome message."""
-    print("  ┌───────────────────────────────────────────┐")
-    print("  │                                           │")
-    print("  │   Hello! Welcome to XO Game!              │")
-    print("  │                                           │")
-    print("  │   ⚠️  WARNING: UNBEATABLE AI! ⚠️           │")
-    print("  │                                           │")
-    print("  │   The AI uses Minimax algorithm with      │")
-    print("  │   Alpha-Beta pruning. It CANNOT lose!     │")
-    print("  │   Best you can do is a DRAW!              │")
-    print("  │                                           │")
-    print("  └───────────────────────────────────────────┘")
-    print("\n")
+
 
 def print_board(board):
-    """Print the game board with a nice UI."""
     print()
     print("        ┌───────────────────────┐")
     print("        │     GAME  BOARD       │")
@@ -440,7 +426,6 @@ def main():
     """Main function - Entry point."""
     clear_screen()
     print_header()
-    print_welcome_message()
     
     input("  Press ENTER to start...")
     
