@@ -74,6 +74,8 @@ The algorithm recursively explores **every possible move** and assumes both play
          ↑
     AI picks this!
 ```
+<img width="569" height="684" alt="image" src="https://github.com/user-attachments/assets/552ac19d-188e-4fea-ba53-fb440368cbc6" />
+
 
 ## 📁 Project Structure
 
