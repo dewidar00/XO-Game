@@ -109,7 +109,4 @@ The Minimax algorithm guarantees optimal play. If you play perfectly, you'll get
 
 Free to use and modify. Have fun!
 
----
-
-Made with ❤️ and Python
 
